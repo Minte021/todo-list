@@ -1,11 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My JavaScript Project</title>
-</head>
-<body>
-  <main id="content"></main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+  </head>
+
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">✓</div>
+          <div>
+            <p class="eyebrow">PERSONAL PLANNER</p>
+            <h1>Todo List</h1>
+          </div>
+        </div>
+
+        <button id="add-project-btn" class="button button-secondary" type="button">
+          + New project
+        </button>
+
+        <form id="project-form" class="form-panel hidden">
+          <label for="project-name">Project name</label>
+          <input
+            id="project-name"
+            name="name"
+            type="text"
+            maxlength="40"
+            placeholder="e.g. University"
+            required
+          />
+
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">
+              Create
+            </button>
+            <button
+              id="cancel-project-btn"
+              class="button button-secondary"
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+
+        <p class="section-label">YOUR PROJECTS</p>
+        <nav id="project-list" class="project-list" aria-label="Projects"></nav>
+
+        <div class="sidebar-note">
+          <p>Small steps make big progress.</p>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="main-header">
+          <div>
+            <p class="eyebrow">YOUR WORKSPACE</p>
+            <h2 id="current-project-title">My Tasks</h2>
+            <p id="project-subtitle">Keep your next steps clear and manageable.</p>
+          </div>
+
+          <button id="add-todo-btn" class="button button-primary" type="button">
+            + Add task
+          </button>
+        </header>
+
+        <form id="todo-form" class="todo-form hidden">
+          <h3>Create a task</h3>
+
+          <label class="field">
+            Task title
+            <input
+              name="title"
+              type="text"
+              placeholder="What needs to get done?"
+              maxlength="100"
+              required
+            />
+          </label>
+
+          <label class="field">
+            Description
+            <textarea
+              name="description"
+              rows="2"
+              placeholder="Add some details..."
+            ></textarea>
+          </label>
+
+          <div class="form-grid-2">
+            <label class="field">
+              Due date
+              <input name="dueDate" type="date" />
+            </label>
+
+            <label class="field">
+              Priority
+              <select name="priority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="field">
+            Notes
+            <textarea
+              name="notes"
+              rows="2"
+              placeholder="Anything else to remember?"
+            ></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">
+              Create task
+            </button>
+            <button
+              id="cancel-todo-btn"
+              class="button button-secondary"
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+
+        <section class="tasks-section">
+          <div class="section-heading">
+            <div>
+              <h3>Tasks</h3>
+              <p id="task-summary">0 tasks</p>
+            </div>
+          </div>
+
+          <div
+            id="todo-list"
+            class="todo-list"
+            aria-label="Task list"
+            aria-live="polite"
+          ></div>
+        </section>
+
+        <footer class="page-footer">
+          Focus on what matters, one task at a time.
+        </footer>
+      </main>
+    </div>
+  </body>
 </html>
