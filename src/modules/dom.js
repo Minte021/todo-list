@@ -173,14 +173,28 @@ function renderTodoCard(todo, expandedTodoId) {
   main.append(completionLabel, content, deleteButton);
   card.append(main);
 
-  if (todo.id === expandedTodoId) {
+    if (todo.id === expandedTodoId) {
     const details = createElement("div", "todo-details");
 
     addDetail(details, "Description", todo.description);
     addDetail(details, "Notes", todo.notes);
 
+    const actions = createElement("div", "form-actions");
+
+    const editButton = createElement(
+        "button",
+        "button button-secondary",
+        "Edit task"
+    );
+
+    editButton.type = "button";
+    editButton.dataset.action = "edit-todo";
+    editButton.dataset.todoId = todo.id;
+
+    actions.append(editButton);
+    details.append(actions);
     card.append(details);
-  }
+    }
 
   return card;
 }
@@ -241,7 +255,23 @@ export function hideProjectForm() {
   projectForm.classList.add("hidden");
 }
 
-export function showTodoForm() {
+export function showTodoForm(todo = null) {
+  const isEditing = todo !== null;
+
+  todoForm.elements.title.value = todo?.title ?? "";
+  todoForm.elements.description.value =
+    todo?.description ?? "";
+  todoForm.elements.dueDate.value = todo?.dueDate ?? "";
+  todoForm.elements.priority.value =
+    todo?.priority ?? "medium";
+  todoForm.elements.notes.value = todo?.notes ?? "";
+
+  document.querySelector("#todo-form-title").textContent =
+    isEditing ? "Edit task" : "Create a task";
+
+  document.querySelector("#todo-submit-btn").textContent =
+    isEditing ? "Save changes" : "Create task";
+
   todoForm.classList.remove("hidden");
   todoForm.elements.title.focus();
 }
@@ -249,4 +279,11 @@ export function showTodoForm() {
 export function hideTodoForm() {
   todoForm.reset();
   todoForm.classList.add("hidden");
+
+  document.querySelector("#todo-form-title").textContent =
+    "Create a task";
+
+  document.querySelector("#todo-submit-btn").textContent =
+    "Create task";
 }
+

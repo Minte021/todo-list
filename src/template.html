@@ -68,7 +68,7 @@
         </header>
 
         <form id="todo-form" class="todo-form hidden">
-          <h3>Create a task</h3>
+          <h3 id="todo-form-title">Create a task</h3>
 
           <label class="field">
             Task title
@@ -116,7 +116,11 @@
           </label>
 
           <div class="form-actions">
-            <button class="button button-primary" type="submit">
+            <button
+              id="todo-submit-btn"
+              class="button button-primary"
+              type="submit"
+            >
               Create task
             </button>
             <button

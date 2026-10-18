@@ -27,6 +27,36 @@ export class Todo {
         this.completed = completed;
     }
 
+    updateDetails({
+  title,
+  description = "",
+  dueDate = "",
+  priority = "medium",
+  notes = "",
+} = {}) {
+  const trimmedTitle = title?.trim();
+
+  if (!trimmedTitle) {
+    throw new Error("A todo needs a title.");
+  }
+
+  const normalizedPriority = String(priority)
+    .trim()
+    .toLowerCase();
+
+  const validPriorities = ["low", "medium", "high"];
+
+  if (!validPriorities.includes(normalizedPriority)) {
+    throw new Error("Invalid todo priority.");
+  }
+
+  this.title = trimmedTitle;
+  this.description = description;
+  this.dueDate = dueDate;
+  this.priority = normalizedPriority;
+  this.notes = notes;
+}
+
     toggleComplete() {
         this.completed = !this.completed;
     }

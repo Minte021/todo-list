@@ -13,10 +13,8 @@ import {
   hideTodoForm,
 } from "./modules/dom.js";
 
-// Load saved projects.
 let projects = loadProjects();
 
-// Make sure the app always has a default project.
 if (projects.length === 0) {
   projects = [new Project({ name: "My Tasks" })];
   saveProjects(projects);
@@ -24,15 +22,14 @@ if (projects.length === 0) {
 
 let activeProjectId = projects[0].id;
 let expandedTodoId = null;
+let editingTodoId = null;
 
-// Find the active project.
 function getActiveProject() {
   return projects.find(
     (project) => project.id === activeProjectId
   );
 }
 
-// Render the current application state.
 function renderApp() {
   renderProjects(projects, activeProjectId);
   renderTodos(getActiveProject(), expandedTodoId);
@@ -41,16 +38,16 @@ function renderApp() {
     !getActiveProject();
 }
 
-// Persist changes before updating the interface.
 function saveAndRender() {
   saveProjects(projects);
   renderApp();
 }
 
-// Open and close forms.
+// Open the project form.
 document
   .querySelector("#add-project-btn")
   .addEventListener("click", () => {
+    editingTodoId = null;
     hideTodoForm();
     showProjectForm();
   });
@@ -59,16 +56,21 @@ document
   .querySelector("#cancel-project-btn")
   .addEventListener("click", hideProjectForm);
 
+// Open a blank task form.
 document
   .querySelector("#add-todo-btn")
   .addEventListener("click", () => {
+    editingTodoId = null;
     hideProjectForm();
     showTodoForm();
   });
 
 document
   .querySelector("#cancel-todo-btn")
-  .addEventListener("click", hideTodoForm);
+  .addEventListener("click", () => {
+    editingTodoId = null;
+    hideTodoForm();
+  });
 
 // Create a project.
 document
@@ -89,12 +91,13 @@ document
     projects.push(project);
     activeProjectId = project.id;
     expandedTodoId = null;
+    editingTodoId = null;
 
     hideProjectForm();
     saveAndRender();
   });
 
-// Create a todo in the active project.
+// Create a new task or update an existing one.
 document
   .querySelector("#todo-form")
   .addEventListener("submit", (event) => {
@@ -110,9 +113,24 @@ document
     const todoData = Object.fromEntries(formData.entries());
 
     try {
-      project.addTodo(todoData);
+      if (editingTodoId !== null) {
+        const existingTodo = project.getTodo(editingTodoId);
 
+        if (!existingTodo) {
+          editingTodoId = null;
+          hideTodoForm();
+          renderApp();
+          return;
+        }
+
+        existingTodo.updateDetails(todoData);
+      } else {
+        project.addTodo(todoData);
+      }
+
+      editingTodoId = null;
       expandedTodoId = null;
+
       hideTodoForm();
       saveAndRender();
     } catch (error) {
@@ -120,7 +138,7 @@ document
     }
   });
 
-// Switch projects when a project button is clicked.
+// Switch between projects.
 document
   .querySelector("#project-list")
   .addEventListener("click", (event) => {
@@ -132,13 +150,14 @@ document
 
     activeProjectId = button.dataset.projectId;
     expandedTodoId = null;
+    editingTodoId = null;
 
     hideProjectForm();
     hideTodoForm();
     renderApp();
   });
 
-// Expand task details or delete a task.
+// Expand tasks, edit tasks, or delete tasks.
 document
   .querySelector("#todo-list")
   .addEventListener("click", (event) => {
@@ -155,14 +174,32 @@ document
       return;
     }
 
-    if (button.dataset.action === "toggle-details") {
+    const action = button.dataset.action;
+
+    if (action === "toggle-details") {
       expandedTodoId =
         expandedTodoId === todoId ? null : todoId;
 
       renderApp();
+      return;
     }
 
-    if (button.dataset.action === "delete-todo") {
+    if (action === "edit-todo") {
+      const todo = project.getTodo(todoId);
+
+      if (!todo) {
+        return;
+      }
+
+      editingTodoId = todo.id;
+      expandedTodoId = todo.id;
+
+      hideProjectForm();
+      showTodoForm(todo);
+      return;
+    }
+
+    if (action === "delete-todo") {
       const todo = project.getTodo(todoId);
 
       if (!todo) {
@@ -183,11 +220,16 @@ document
         expandedTodoId = null;
       }
 
+      if (editingTodoId === todoId) {
+        editingTodoId = null;
+        hideTodoForm();
+      }
+
       saveAndRender();
     }
   });
 
-// Mark tasks complete or incomplete.
+// Complete or uncomplete a task.
 document
   .querySelector("#todo-list")
   .addEventListener("change", (event) => {
@@ -210,5 +252,4 @@ document
     saveAndRender();
   });
 
-// Initial render.
 renderApp();
